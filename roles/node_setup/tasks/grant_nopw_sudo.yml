@@ -1,0 +1,8 @@
+- name: grant no password sudo user access
+  become: true
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '(s?)NOPASSWD'
+    line: 'ALL ALL = (ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'

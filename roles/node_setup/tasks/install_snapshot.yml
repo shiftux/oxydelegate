@@ -1,0 +1,23 @@
+- name: clone the oxy-snapshot repo
+  git:
+    repo: "{{snapshot_git_repo}}"
+    version: "{{git_branch}}"
+    dest: "{{snapshot_base_dir}}"
+    clone: yes
+    update: no
+  become: yes
+
+- name: Set oxy user as owner of oxy-onde folder
+  shell: 'chown -R oxy:oxy {{snapshot_base_dir}}'
+  become: yes
+
+- name: fix the script (oxy is not in home folder)
+  shell: sed -i -- 's/OXY_CONFIG=~\/oxy-node\/config.json/OXY_CONFIG=..\/oxy-node\/config.json/g' {{snapshot_base_dir}}/oxy-snapshot.sh
+
+- name: create a snapshot
+  shell: "cd {{snapshot_base_dir}} && ./oxy-snapshot.sh create"
+  register: snapshot
+
+- name: see if worked
+  debug:
+    var: snapshot.stdout

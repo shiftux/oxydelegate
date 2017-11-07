@@ -1,0 +1,23 @@
+---
+
+- name: ensure it's off as root
+  become: true
+  shell: '{{oxy_base_dir}}/oxy_manager.bash stop'
+
+- name: ensure it's off as oxy
+  become: oxy
+  shell: '{{oxy_base_dir}}/oxy_manager.bash stop'
+
+- name: run oxy service
+  shell: '{{oxy_base_dir}}/oxy_manager.bash reload'
+  become_user: oxy
+
+- name: check status
+  shell: '{{oxy_base_dir}}/oxy_manager.bash status'
+  register: status
+  become_user: oxy
+
+- name: see if it's running
+  debug:
+    var: status.stdout
+  become_user: oxy

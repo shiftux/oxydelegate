@@ -1,0 +1,74 @@
+---
+
+- name: clone the oxy repo
+  git:
+    repo: "{{git_repo}}"
+    version: "{{git_branch}}"
+    dest: "{{oxy_base_dir}}"
+    clone: yes
+    update: no
+  become: yes
+
+- name: Set oxy user as owner of oxy-onde folder
+  shell: 'chown -R oxy:oxy {{oxy_base_dir}}'
+  become: yes
+
+# - name: add sodium_fixer file
+#   become: true
+#   copy:
+#     src: "{{ role_path }}/files/sodium_fixer.sh"
+#     dest: /opt/oxy-node/
+
+# - name: Check if sodium_fixer has already been applied
+#   shell: grep 'npm install sodium' {{oxy_base_dir}}/oxy_manager.bash | cat
+#   register: grep
+
+# - name: run sodium_fixer
+#   become: true
+#   shell: sh {{oxy_base_dir}}/sodium_fixer.sh
+#   when: grep.stdout == ""
+
+- name: Check if oxy_manager can start
+  shell: '{{oxy_base_dir}}/oxy_manager.bash start | grep -i error'
+  register: oxystart
+  ignore_errors: yes
+
+- name: "remove entry cron to run oxychecker"
+  cron:
+    name: "run oxy checker"
+    job: "php /opt/oxy-checker/checkdelegate.php >> /opt/oxy-checker/logs/checkdelegate.log 2>&1"
+    state: absent
+
+- name: install oxy_manager
+  # become: yes
+  shell: '{{oxy_base_dir}}/oxy_manager.bash install'
+  when: oxystart.stdout != "" or oxystart.stderr != ""
+
+- name: Make sure Oxy is stopped again
+  shell: '{{oxy_base_dir}}/oxy_manager.bash stop'
+
+- name: copy config file
+  copy:
+    src: ../files/{{server_name}}_config.json
+    dest: '{{oxy_base_dir}}/config.json'
+    force: yes
+    owner: oxy
+    group: oxy
+    mode: u+rwx,g+rx,o+rx
+
+- name: install oxy_manager wallet
+  # become: yes
+  shell: '{{oxy_base_dir}}/oxy_manager.bash install_wallet'
+  when: oxystart.stdout != "" or oxystart.stderr != ""
+
+- name: Set oxy user as owner of oxy-onde folder
+  shell: 'chown -R oxy:oxy {{oxy_base_dir}}'
+  become: yes
+
+- name: rebuild oxy
+  expect:
+    command: '{{oxy_base_dir}}/oxy_manager.bash rebuild'
+    responses:
+      'Download a recent': "y"
+    timeout: 100
+    echo: yes

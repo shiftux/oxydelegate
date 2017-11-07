@@ -1,0 +1,49 @@
+---
+
+- name: get the hostname
+  shell: hostname
+  register: servername
+
+- name: change hostname with command
+  shell: hostname {{server_name}}
+  become: yes
+  when: servername.stdout != "{{server_name}}"
+
+- name: backup hosts file
+  become: yes
+  copy:
+    src: /etc/hosts
+    dest: /etc/hosts.bkp
+    force: no
+  when: servername.stdout != "{{server_name}}"
+
+- name: replace hostname in /etc/hosts
+  become: yes
+  template:
+    src: "../templates/hosts.j2"
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: "u=rw,g=rw,o=r"
+  when: servername.stdout != "{{server_name}}"
+
+# - name: backup hostname file
+#   copy:
+#     src: /etc/hostname
+#     dest: /etc/hostname.bkp
+#     force: no
+
+- name: replace hostname in /etc/hostname
+  become: yes
+  template:
+    src: "../templates/hostname.j2"
+    dest: /etc/hostname
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o=rx"
+  when: servername.stdout != "{{server_name}}"
+
+- name: set it for the service
+  become: yes
+  shell: hostnamectl set-hostname {{server_name}}
+  when: servername.stdout != "{{server_name}}"

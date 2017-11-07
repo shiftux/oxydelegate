@@ -1,0 +1,8 @@
+- name: remove no password sudo user access
+  become: true
+  lineinfile:
+    dest: /etc/sudoers
+    state: absent
+    regexp: '(s?)NOPASSWD'
+    line: 'ALL ALL = (ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'

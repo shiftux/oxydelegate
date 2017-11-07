@@ -1,0 +1,101 @@
+---
+
+# error with aptitude and ansible...
+# - name: Update and upgrade apt packages
+#   become: true
+#   apt:
+#     upgrade: yes
+#     update_cache: yes
+
+# - name: Update and upgrade apt packages
+#   become: yes
+#   shell: apt-get update && apt-get upgrade -y
+
+- name: "install vim"
+  become: yes
+  package: name=vim state=present
+
+- name: "install git"
+  become: yes
+  package: name=git state=present
+
+- name: "install python-setuptools"
+  become: yes
+  package: name=python-setuptools state=present
+
+- name: "install locales"
+  become: yes
+  package: name=locales state=present
+
+- name: "install curl"
+  become: yes
+  package: name=curl state=present
+
+- name: "install build-essential"
+  become: yes
+  package: name=build-essential state=present
+
+- name: "install python"
+  become: yes
+  package: name=python state=present
+
+- name: "install lsb-release"
+  become: yes
+  package: name=lsb-release state=present
+
+- name: "install wget"
+  become: yes
+  package: name=wget state=present
+
+- name: "install openssl"
+  become: yes
+  package: name=openssl state=present
+
+- name: "install autoconf"
+  become: yes
+  package: name=autoconf state=present
+
+- name: "install libtool"
+  become: yes
+  package: name=libtool state=present
+
+- name: "install automake"
+  become: yes
+  package: name=automake state=present
+
+- name: "install php"
+  become: yes
+  package: name=php state=present
+
+- name: "install php-cli"
+  become: yes
+  package: name=php-cli state=present
+
+- name: "install php-mbstring"
+  become: yes
+  package: name=php-mbstring state=present
+
+- name: "install php-sqlite3"
+  become: yes
+  package: name=php-sqlite3 state=present
+
+- name: "install libsodium-dev"
+  become: yes
+  package: name=libsodium-dev state=present
+
+- name: "install iptables"
+  become: yes
+  package: name=iptables state=present
+
+- name: "install ntpstat"
+  become: yes
+  package: name=ntpstat state=present
+
+- name: install pip
+  become: yes
+  shell: sudo easy_install pip
+
+- name: install pexpect
+  become: yes
+  shell: sudo pip install pexpect
+

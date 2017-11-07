@@ -1,0 +1,41 @@
+---
+- name: check if there is a swapfile
+  shell: swapon --show
+  become: yes
+  register: swapout
+
+- name: create swap file
+  become: true
+  shell: 'fallocate -l 1G /swapfile'
+  when: swapout.stdout == ""
+
+- name: own swapfile by root
+  become: true
+  shell: chown root:root /swapfile
+  when: swapout.stdout == ""
+
+- name: set swapfile permissions
+  become: true
+  shell: chmod 600 /swapfile
+  when: swapout.stdout == ""
+
+- name: make the swapfile swapspace
+  become: true
+  shell: mkswap /swapfile
+  when: swapout.stdout == ""
+
+- name: turn swapfile usage on
+  become: true
+  shell: swapon /swapfile
+  when: swapout.stdout == ""
+
+# - name: backup fstab
+#   become: yes
+#   copy:
+#     src: /etc/fstab
+#     dest: /etc/fstab.bkp
+#     force: no
+
+# - name: put swapfile in fstab
+#   become: true
+#   shell: echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab

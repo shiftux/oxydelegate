@@ -1,0 +1,17 @@
+---
+
+- name: backup iptables
+  shell: "iptables-save > {{oxy_base_dir}}/iptables.backup"
+  become: yes
+
+- name: copy the iptables script to the node
+  template:
+    src: "../templates/iptables_script.j2"
+    dest: "{{oxy_base_dir}}/iptables_script.sh"
+    owner: oxy
+    group: oxy
+    mode: "u=rwx,g=rx,o=rx"
+
+- name: run iptables script
+  shell: "sh {{oxy_base_dir}}/iptables_script.sh"
+  become: yes

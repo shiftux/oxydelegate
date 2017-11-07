@@ -1,0 +1,36 @@
+- name: clone the oxy-checker repo
+  git:
+    repo: "{{checker_git_repo}}"
+    version: "{{git_branch}}"
+    dest: "{{checker_base_dir}}"
+    clone: yes
+    update: no
+  become: yes
+
+- name: Set oxy user as owner of oxy-onde folder
+  shell: 'chown -R oxy:oxy {{checker_base_dir}}'
+  become: yes
+
+- name: copy config file
+  copy:
+    src: ../files/{{server_name}}_config.php
+    dest: '{{checker_base_dir}}/config.php'
+    force: yes
+    group: oxy
+    owner: oxy
+    mode: u+rwx,g+rx,o+rx
+
+- name: fix the checker for self-signed certificate (1/3)
+  shell: sed -i -- 's/passthru("curl -s/passthru("curl -k -s/g' {{checker_base_dir}}/includes/functions.php
+
+- name: fix the checker for self-signed certificate (2/3)
+  shell: sed -i -- 's/\$consensusMaster = @file_get_contents(\$masternode.":".\$masterport."\/api\/loader\/status\/sync")/exec("curl -k -s --connect-timeout 10 -X GET \$masternode:\$masterport\/api\/loader\/status\/sync", $consensusMaster); $consensusMaster = current($consensusMaster)/g' {{checker_base_dir}}/includes/consensus.php
+
+- name: fix the checker for self-signed certificate (3/3)
+  shell: sed -i -- 's/\$consensusSlave = @file_get_contents(\$slavenode.":".\$slaveport."\/api\/loader\/status\/sync")/exec("curl -k -s --connect-timeout 10 -X GET \$slavenode:\$slaveport\/api\/loader\/status\/sync", $consensusSlave); $consensusSlave = current($consensusSlave)/g' {{checker_base_dir}}/includes/consensus.php
+
+- name: "setup cron to run oxychecker"
+  cron:
+    name: "run oxy checker"
+    job: "php /opt/oxy-checker/checkdelegate.php >> /opt/oxy-checker/logs/checkdelegate.log 2>&1"
+

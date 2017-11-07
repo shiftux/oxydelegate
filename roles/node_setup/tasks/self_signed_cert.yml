@@ -1,0 +1,19 @@
+---
+
+- name: copy key file
+  copy:
+    src: ../files/{{keyfile}}.key
+    dest: '{{oxy_base_dir}}/ssl/{{server_name}}.key'
+    force: no
+
+- name: copy csr file
+  copy:
+    src: ../files/{{keyfile}}.csr
+    dest: '{{oxy_base_dir}}/ssl/{{server_name}}.csr'
+    force: no
+
+- name: copy crt file
+  copy:
+    src: ../files/{{keyfile}}.crt
+    dest: '{{oxy_base_dir}}/ssl/{{server_name}}.crt'
+    force: no
