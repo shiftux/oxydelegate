@@ -99,7 +99,8 @@ Take the default config file that comes with Oxy and change the following in it:
     },
 ```
 
-### Oxy-checker config files, see https://github.com/Oxycoin/oxy-checker on how to set them up. The php files go in `roles/node_stup/files/<server_name>_config.php`
+### Oxy-checker config files
+See https://github.com/Oxycoin/oxy-checker on how to set them up. The php files go in `roles/node_stup/files/<server_name>_config.php`
 
 **Note:** the "install oxy_manager" step takes a long time, if you want to keep an eye on it you can connect to your server and observe the logfile with:
 `tail -f /opt/oxy-node/logs/oxy_manager.log`
