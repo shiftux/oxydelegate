@@ -1,0 +1,17 @@
+---
+
+- name: "install ruby"
+  become: yes
+  package: name=ruby state=present
+
+- name: "install ruby-all-dev"
+  become: yes
+  package: name=ruby-all-dev state=present
+
+- name: "update gems"
+  become: yes
+  shell: "gem update --system"
+
+- name: "install telegramAPI gem"
+  become: yes
+  shell: "gem install telegramAPI"

@@ -2,7 +2,6 @@
 
 - name: oxy-node-setup
   hosts: all
-  # vars:
-  #   local_meteor_dir: /Users/tgdmosaa/development/cfcalendar
   roles:
-    - node_setup
+    # - node_setup
+    - rank_checker

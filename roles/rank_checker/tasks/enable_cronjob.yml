@@ -1,0 +1,13 @@
+- name: "setup cron to run oxychecker"
+  cron:
+    name: "run delegate rank checker"
+    job: "cd {{rank_checker_base_dir}} && /usr/bin/ruby {{rank_checker_base_dir}}/check_rank.rb >> {{rank_checker_base_dir}}/logs/checkDelegateRank.log 2>&1"
+
+
+
+add this to cron!!!!!!!
+
+
+0 22 * * * find /home/oxy -type f -mtime +7 -name '*.log' -execdir rm -- '{}' \;
+
+

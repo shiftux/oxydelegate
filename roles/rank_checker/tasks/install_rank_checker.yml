@@ -1,0 +1,24 @@
+- name: clone the oxy repo
+  git:
+    repo: "{{rank_checker_git_repo}}"
+    version: "{{git_branch}}"
+    dest: "{{rank_checker_base_dir}}"
+    clone: yes
+    update: yes
+  become: yes
+
+- name: copy config file
+  copy:
+    src: ../files/config.yaml
+    dest: '{{rank_checker_base_dir}}/config.yaml'
+    force: yes
+    group: oxy
+    owner: oxy
+    mode: u+rw,g+r,o+r
+
+- name: Create log directory
+  file: path={{rank_checker_base_dir}}/logs state=directory
+
+- name: Set oxy user as owner of oxy-onde folder
+  shell: 'chown -R oxy:oxy {{rank_checker_base_dir}}'
+  become: yes
